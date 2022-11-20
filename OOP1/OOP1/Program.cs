@@ -1,6 +1,6 @@
 ﻿namespace OOP1
 {
-    internal class Lab1
+    class Lab1
     {
         static void Main(string[] args)
         {
@@ -14,8 +14,9 @@
             GameAccount.PlayGame(User1, User2, 10);
             GameAccount.PlayGame(User1, User2, -2);
             GameAccount.PlayGame(User1, User2, 14);
-            GameAccount.GetStats(User1);
-            GameAccount.GetStats(User2);
+            GameAccount.GetStats();
+            GameAccount.getGamesCount(User1);
+            GameAccount.getRating(User1);
         }
     }
 }

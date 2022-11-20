@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-
 namespace OOP1
 {
-    public class GameAccount
+    class GameAccount
     {
         public String UserName;
         public int CurrentRating;
         public int GamesCount;
-        public String History = "";
-        static int gameID = 0;
         static Random random = new Random();
+        static List<Game> history = new List<Game>();
         public GameAccount(String UserName)
         {
             this.UserName = UserName;
@@ -18,8 +16,9 @@ namespace OOP1
             GamesCount = 0;
         }
 
-        public static void WinGame(GameAccount User, GameAccount Opponent, int Rating)
+        static void WinGame(GameAccount User, GameAccount Opponent, int Rating)
         {
+            Game game = new Game(User.UserName, Opponent.UserName, Rating, 1);
             User.CurrentRating += Rating;
             if (Opponent.CurrentRating - Rating >= 1)
             {
@@ -27,12 +26,12 @@ namespace OOP1
             }
             else
                 Opponent.CurrentRating = 1;
-            User.History += "\nID:" + gameID + "   Перемiг гравця " + Opponent.UserName + " та отримав " + Rating + " балiв рейтингу." + " Поточний рейтинг: " + User.CurrentRating;
-            Opponent.History += "\nID:" + gameID + "   Програв гравцю " + User.UserName + " та втратив " + Rating + " балiв рейтингу." + " Поточний рейтинг: " + Opponent.CurrentRating;
-            Console.WriteLine("Гравець " + User.UserName + " перемiг та отримав " + Rating + " балiв рейтингу." + " Поточний рейтинг: " + User.CurrentRating);
+            history.Add(game);
+
         }
-        public static void LoseGame(GameAccount User, GameAccount Opponent, int Rating)
+        static void LoseGame(GameAccount User, GameAccount Opponent, int Rating)
         {
+            Game game = new Game(User.UserName, Opponent.UserName, Rating, 2);
             Opponent.CurrentRating += Rating;
             if (User.CurrentRating - Rating >= 1)
             {
@@ -40,25 +39,44 @@ namespace OOP1
             }
             else
                 User.CurrentRating = 1;
-            User.History += "\nID:" + gameID + "   Програв гравцю " + Opponent.UserName + " та втратив " + Rating + " балiв рейтингу." + " Поточний рейтинг: " + User.CurrentRating;
-            Opponent.History += "\nID:" + gameID + "   Перемiг гравця " + User.UserName + " та отримав " + Rating + " балiв рейтингу." + " Поточний рейтинг: " + Opponent.CurrentRating;
-            Console.WriteLine("Гравець " + User.UserName + " програв та втратив " + Rating + " балiв рейтингу." + " Поточний рейтинг: " + User.CurrentRating);
+            history.Add(game);
+
         }
 
-        public static void GetStats(GameAccount User)
+        public static void GetStats()
         {
-            Console.WriteLine("\nСтатистика гравця " + User.UserName + User.History);
-            Console.WriteLine("Кiлькiсть iгор: " + User.GamesCount + "\nРейтинг: " + User.CurrentRating);
-
+         foreach(var Game in history)
+            {
+                if (Game.flag == 1)
+                {
+                    Console.WriteLine("ID:" + Game.gameID + "  Гравець " + Game.player1 + " перемiг гравця " + Game.player2 + " та заробив " + Game.rating + " балiв рейтингу");
+                }
+                else if (Game.flag == 2)
+                {
+                    Console.WriteLine("ID:" + Game.gameID + "  Гравець " + Game.player1 + " програв гравцю " + Game.player2 + " та втратив " + Game.rating + " балiв рейтингу");
+                } 
+                else
+                {
+                    Console.WriteLine("ID:" + Game.gameID + "  Рейтинг гри не може будти вiд'ємним. Рейтинг обох гравцiв не змiниться");
+                }
+            }
         }
 
+        public static void getGamesCount(GameAccount User)
+        {
+            Console.WriteLine("Кiлькiсть iгор гравця " + User.UserName + ": " + User.GamesCount);
+        }
 
+        public static void getRating(GameAccount User)
+        {
+            Console.WriteLine("Поточний рейтинг гравця " + User.UserName + ": " + User.CurrentRating);
+        }
         public static void PlayGame(GameAccount User, GameAccount Opponent, int Rating)
         {
-            
-            if (Rating <= 0)
+            if (Rating < 0)
             {
-                Console.WriteLine("Рейтинг гри не може будти вiд'ємним. Гра не зарахується.");
+                Game game = new Game(User.UserName, Opponent.UserName);
+                history.Add(game);
                 return;
             }
             if (random.Next(2) == 1)
@@ -69,11 +87,8 @@ namespace OOP1
             {
                 LoseGame(User, Opponent, Rating);
             }
-
             User.GamesCount += 1;
             Opponent.GamesCount += 1;
-            gameID++;
-
         }
     }
 }
